@@ -232,8 +232,30 @@ defmodule Macro do
     unpipe(right, unpipe(left, acc))
   end
 
+  defp unpipe({op, line, args} = other, acc) when is_list(args) do
+    segment =
+      case placeholder_position(args) do
+        nil -> {other, 0}
+        n -> {{op, line, List.delete_at(args, n)}, n}
+      end
+
+    [segment | acc]
+  end
+
   defp unpipe(other, acc) do
     [{other, 0} | acc]
+  end
+
+  defp placeholder_position(args) do
+    Enum.find_index(args, &is_placeholder/1)
+  end
+
+  defp is_placeholder({:_, _, _}) do
+    true
+  end
+
+  defp is_placeholder(_) do
+    false
   end
 
   @doc """

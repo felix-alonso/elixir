@@ -1115,7 +1115,16 @@ defmodule KernelTest do
       assert [1] |> (&hd(&1)).() == 1
     end
 
+    test "with placeholder" do
+      assert 1 |> subtract(2, _) == 1
+      assert 1 |> subtract(_, 2) == -1
+
+      assert "hello" |> Regex.match?(~r/l{2}/, _)
+    end
+
     defp twice(a), do: a * 2
+
+    defp subtract(a, b), do: a - b
 
     defp local(list) do
       Enum.map(list, &(&1 * 2))

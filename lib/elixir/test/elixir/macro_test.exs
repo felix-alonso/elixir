@@ -853,6 +853,7 @@ defmodule MacroTest do
   test "unpipe/1" do
     assert Macro.unpipe(quote(do: foo)) == quote(do: [{foo, 0}])
     assert Macro.unpipe(quote(do: foo |> bar)) == quote(do: [{foo, 0}, {bar, 0}])
+    assert Macro.unpipe(quote(do: foo |> bar(1, _))) == quote(do: [{foo, 0}, {bar(1), 1}])
     assert Macro.unpipe(quote(do: foo |> bar |> baz)) == quote(do: [{foo, 0}, {bar, 0}, {baz, 0}])
   end
 
