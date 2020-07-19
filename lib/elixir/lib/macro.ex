@@ -234,7 +234,7 @@ defmodule Macro do
 
   defp unpipe({op, line, args} = other, acc) when is_list(args) do
     segment =
-      case placeholder_position(args) do
+      case hole_position(args) do
         nil -> {other, 0}
         n -> {{op, line, List.delete_at(args, n)}, n}
       end
@@ -246,17 +246,11 @@ defmodule Macro do
     [{other, 0} | acc]
   end
 
-  defp placeholder_position(args) do
-    Enum.find_index(args, &is_placeholder/1)
-  end
+  defp hole_position(args), do: hole_position(args, 0)
 
-  defp is_placeholder({:_, _, _}) do
-    true
-  end
-
-  defp is_placeholder(_) do
-    false
-  end
+  defp hole_position([{:_, _, _} | _tail], n), do: n
+  defp hole_position([_head | tail], n), do: hole_position(tail, n + 1)
+  defp hole_position([], _), do: nil
 
   @doc """
   Pipes `expr` into the `call_args` at the given `position`.
